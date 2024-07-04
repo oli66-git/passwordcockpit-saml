@@ -13,8 +13,10 @@ services:
       PASSWORDCOCKPIT_DATABASE_DATABASE: passwordcockpit
       PASSWORDCOCKPIT_BLOCK_CIPHER_KEY: supersecretkey
       PASSWORDCOCKPIT_AUTHENTICATION_SECRET_KEY: authenticationsecretkey
-      PASSWORDCOCKPIT_SWAGGER_API_HOST: http://[YOUR-IP]:4200
-      PASSWORDCOCKPIT_CLIENT_ADDRESS: http://[YOUR-IP]:4200
+      PASSWORDCOCKPIT_SWAGGER_API_HOST: http://password.local:4200
+      PASSWORDCOCKPIT_CLIENT_ADDRESS: http://password.local:4200
+      XDEBUG_CONFIG: start_with_request=yes idekey=VSCODE client_host=host.docker.internal output_dir=/var/www/html/data
+      XDEBUG_MODE: debug
     depends_on:
       - passwordcockpit_database
     networks:
@@ -27,7 +29,7 @@ services:
     volumes:
       - ../frontend:/var/www/html
     environment:
-      PASSWORDCOCKPIT_BASEHOST: http://[YOUR-IP]:8080
+      PASSWORDCOCKPIT_BASEHOST: http://password.local:8080
     networks:
       - passwordcockpit_network
     command: ember serve --port 4200
