@@ -10,7 +10,7 @@ This README will explain the steps needed to setup and start the Passwordcockpit
 
 ## Installation
 
-The IP of the host machine is needed. Replace `[YOUR-IP]` in the `docker-compose.yml` file with your ip. There should be 3 replacements.
+Go to your /etc/hosts and assign your private IP to the virtualhost password.local
 
 Make sure the current working directory is `./develop`.
 
@@ -33,7 +33,7 @@ passwordcockpit_frontend    | Build successful (....ms) – Serving on http://lo
 
 The current branch on both `frontend` and `backend` is `develop`, but is an old develop branch. Please check the GIT and see the current branch. You should checkout to this branch and call `docker-compose restart passwordcockpit_frontend`.
 
-After that, go to `[YOUR-IP]:4200`. If everything went correctly, there should be a login page.<br>
+After that, go to `http://password.local:4200`. If everything went correctly, there should be a login page.<br>
 
 The default admin login credentials are:
 - username: admin
@@ -43,4 +43,4 @@ Default user:
 - username: user
 - password: User123!
 
-If the first login results in a `Undefined error`, the certificate needs to be accepted. In most browsers, go to `[YOUR-IP]:4344` and accept it.
+If the first login results in a `Undefined error`, the certificate needs to be accepted. In most browsers, go to `http://password.local:4344` and accept it.
