@@ -1,7 +1,6 @@
-version: "3.5"
 services:
   passwordcockpit_backend:
-    image: passwordcockpit/backend:dev-1.3.0
+    image: passwordcockpit/backend:dev-1.4.0
     container_name: passwordcockpit_backend
     ports:
       - "8080:80"
@@ -21,7 +20,7 @@ services:
     networks:
       - passwordcockpit_network
   passwordcockpit_frontend:
-    image: passwordcockpit/frontend:dev-1.2.0
+    image: passwordcockpit/frontend:dev-1.4.0
     container_name: passwordcockpit_frontend
     ports:
       - "4200:4200"
