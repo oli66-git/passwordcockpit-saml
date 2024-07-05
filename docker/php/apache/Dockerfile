@@ -178,6 +178,7 @@ VOLUME /var/www/html/data
 RUN set -ex; \
 chmod -R 777 /var/www/html/data; \ 
 chmod -R 777 /var/www/html/upload; \
+chmod 777 /var/www/html/tmp;\
 chmod 777 /var/www/html/public; \
 chmod 777 /var/www/html/public/index.html; \
 chmod -R 777 /var/www/html/public/assets; \
