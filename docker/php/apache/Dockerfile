@@ -2,8 +2,8 @@
 # Build backend artifacts
 ##############################################
 
-FROM --platform=linux/amd64 php:8.1-apache-bullseye as backend_artifacts
-ARG PASSWORDCOCKPIT_BACKEND_TAG=e7a00c34d38f0b50f69516f171d8c716af428ef3
+FROM --platform=linux/amd64 php:8.2-apache-bullseye as backend_artifacts
+ARG PASSWORDCOCKPIT_BACKEND_TAG=a25824c2b812b90f2189f8166e5189dc1986f576
 RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends git
@@ -39,7 +39,6 @@ RUN composer install --prefer-dist --optimize-autoloader --no-dev
 
 # configuration files
 RUN set -ex; \
-mv config/autoload/db.local.php.dist config/autoload/db.local.php; \
 mv config/autoload/client.local.php.dist config/autoload/client.local.php; \
 mv config/autoload/doctrine.local.php.dist config/autoload/doctrine.local.php; \
 mv config/autoload/crypt.local.php.dist config/autoload/crypt.local.php; \
@@ -58,8 +57,8 @@ RUN composer swagger
 # Build frontend artifacts
 ##############################################
 
-FROM node:18.3 as frontend_artifacts
-ARG PASSWORDCOCKPIT_FRONTEND_TAG=65a419d7eee7cf19578f4d07fe4004bc8a888dc4
+FROM node:20.12 as frontend_artifacts
+ARG PASSWORDCOCKPIT_FRONTEND_TAG=a1bac6e13f2fa91e93febc672fb843f41cf021f5
 RUN apt-get install git -y
 WORKDIR /usr/src/app
 
@@ -84,7 +83,7 @@ RUN ember build -p
 # Build the HTML and PHP container
 ##############################################
 
-FROM --platform=linux/amd64 php:8.1-apache-bullseye
+FROM --platform=linux/amd64 php:8.2-apache-bullseye
 RUN set -ex; \
 	\
 	savedAptMark="$(apt-mark showmanual)"; \
