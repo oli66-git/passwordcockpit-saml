@@ -103,6 +103,8 @@ RUN set -ex; \
     a2enmod rewrite; \
     # ssl extension
     a2enmod ssl; \
+    # headers extension
+    a2enmod headers; \
     \
 	# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 	apt-mark auto '.*' > /dev/null; \
