@@ -2,13 +2,13 @@
 ##############################################
 # Change permissions
 ##############################################
-chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/html/data; \ 
+chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/html/data; \
 chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/html/upload; \
 chown  ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/html/public; \
 chown  ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/html/public/index.html; \
 chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/html/public/assets; \
 chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/html/swagger; \
-chmod -R 744 /var/www/html/data; \ 
+chmod -R 744 /var/www/html/data; \
 chmod -R 744 /var/www/html/upload; \
 chmod 744 /var/www/html/public; \
 chmod 744 /var/www/html/public/index.html; \
