@@ -14,9 +14,9 @@ echo -e "\e[32mStart swagger part\e[0m"
 if [ "${PASSWORDCOCKPIT_SWAGGER}" == "enable" ]; then
     PASSWORDCOCKPIT_SWAGGERBASEHOST=$(echo ${PASSWORDCOCKPIT_BASEHOST} |sed 's/https\?:\/\///')
 	sed -ri -e "s!PASSWORDCOCKPIT_BASEHOST!$PASSWORDCOCKPIT_SWAGGERBASEHOST!g" swagger/swagger.json
-	mv swagger public/swagger
+	cp -r swagger public
 else
-	rm -rf swagger
+	rm -rf swagger/*
 fi
 echo -e "\e[32mSwagger ok\e[0m"
 
