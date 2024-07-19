@@ -152,6 +152,10 @@ RUN { \
     echo 'Header set Strict-Transport-Security "max-age=10886400; includeSubDomains"'; \
     echo 'Header set Content-Security-Policy "default-src' "'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"'"'; \
     echo '</Directory>'; \
+    echo '<Directory ${APACHE_DOCUMENT_ROOT}/swagger>'; \
+    echo 'Header unset Strict-Transport-Security'; \
+    echo 'Header unset Content-Security-Policy'; \
+    echo '</Directory>'; \
     } > /etc/apache2/conf-enabled/mod-rewrite.conf
 # Hide Apache Version and Linux OS From HTTP Headers
 RUN sed -ri -e 's!ServerTokens OS!ServerTokens Prod!g' /etc/apache2/conf-enabled/security.conf
