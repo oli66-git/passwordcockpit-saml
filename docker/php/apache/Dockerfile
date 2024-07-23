@@ -58,7 +58,7 @@ RUN composer swagger
 ##############################################
 
 FROM node:20.12 as frontend_artifacts
-ARG PASSWORDCOCKPIT_FRONTEND_TAG=2b4feaf37e19955d54ef713214677524737f0e35
+ARG PASSWORDCOCKPIT_FRONTEND_TAG=9a3046ca7d072c6c592b68193d30cbabf91a6b30
 RUN apt-get install git -y
 WORKDIR /usr/src/app
 
