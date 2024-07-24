@@ -2,8 +2,8 @@
 # Build backend artifacts
 ##############################################
 
-FROM --platform=linux/amd64 php:8.1-apache-bullseye as backend_artifacts
-ARG PASSWORDCOCKPIT_BACKEND_TAG=e7a00c34d38f0b50f69516f171d8c716af428ef3
+FROM --platform=linux/amd64 php:8.2-apache-bullseye as backend_artifacts
+ARG PASSWORDCOCKPIT_BACKEND_TAG=ce70618b76b6521a00458f0fed73bca148180974
 RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends git
@@ -39,7 +39,6 @@ RUN composer install --prefer-dist --optimize-autoloader --no-dev
 
 # configuration files
 RUN set -ex; \
-mv config/autoload/db.local.php.dist config/autoload/db.local.php; \
 mv config/autoload/client.local.php.dist config/autoload/client.local.php; \
 mv config/autoload/doctrine.local.php.dist config/autoload/doctrine.local.php; \
 mv config/autoload/crypt.local.php.dist config/autoload/crypt.local.php; \
@@ -58,8 +57,8 @@ RUN composer swagger
 # Build frontend artifacts
 ##############################################
 
-FROM node:18.3 as frontend_artifacts
-ARG PASSWORDCOCKPIT_FRONTEND_TAG=65a419d7eee7cf19578f4d07fe4004bc8a888dc4
+FROM node:20.12 as frontend_artifacts
+ARG PASSWORDCOCKPIT_FRONTEND_TAG=5e286e3dcca648ceaaf242cc8501ff24a8e20df6
 RUN apt-get install git -y
 WORKDIR /usr/src/app
 
@@ -84,7 +83,7 @@ RUN ember build -p
 # Build the HTML and PHP container
 ##############################################
 
-FROM --platform=linux/amd64 php:8.1-apache-bullseye
+FROM --platform=linux/amd64 php:8.2-apache-bullseye
 RUN set -ex; \
 	\
 	savedAptMark="$(apt-mark showmanual)"; \
@@ -104,6 +103,8 @@ RUN set -ex; \
     a2enmod rewrite; \
     # ssl extension
     a2enmod ssl; \
+    # headers extension
+    a2enmod headers; \
     \
 	# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 	apt-mark auto '.*' > /dev/null; \
@@ -145,6 +146,17 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 # set DirectoryIndex priority to index.html
 RUN sed -ri -e 's!DirectoryIndex index.php index.html!DirectoryIndex index.html index.php!g' /etc/apache2/conf-available/docker-php.conf
+# Set Security Headers (use https://csp-evaluator.withgoogle.com/)
+RUN { \
+    echo '<Directory ${APACHE_DOCUMENT_ROOT}>'; \
+    echo 'Header set Strict-Transport-Security "max-age=10886400; includeSubDomains"'; \
+    echo 'Header set Content-Security-Policy "default-src' "'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"'"'; \
+    echo '</Directory>'; \
+    echo '<Directory ${APACHE_DOCUMENT_ROOT}/swagger>'; \
+    echo 'Header unset Strict-Transport-Security'; \
+    echo 'Header unset Content-Security-Policy'; \
+    echo '</Directory>'; \
+    } > /etc/apache2/conf-enabled/mod-rewrite.conf
 # Hide Apache Version and Linux OS From HTTP Headers
 RUN sed -ri -e 's!ServerTokens OS!ServerTokens Prod!g' /etc/apache2/conf-enabled/security.conf
 RUN sed -ri -e 's!ServerSignature On!ServerSignature Off!g' /etc/apache2/conf-enabled/security.conf
@@ -179,6 +191,7 @@ VOLUME /var/www/html/data
 RUN set -ex; \
 chmod -R 777 /var/www/html/data; \ 
 chmod -R 777 /var/www/html/upload; \
+chmod 777 /var/www/html/tmp; \
 chmod 777 /var/www/html/public; \
 chmod 777 /var/www/html/public/index.html; \
 chmod -R 777 /var/www/html/public/assets; \
