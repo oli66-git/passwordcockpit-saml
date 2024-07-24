@@ -3,7 +3,7 @@
 ##############################################
 
 FROM --platform=linux/amd64 php:8.2-apache-bullseye as backend_artifacts
-ARG PASSWORDCOCKPIT_BACKEND_TAG=127dbee49227f1079024b595eaf9c3f8ca5f6c4a
+ARG PASSWORDCOCKPIT_BACKEND_TAG=ce70618b76b6521a00458f0fed73bca148180974
 RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends git
@@ -58,7 +58,7 @@ RUN composer swagger
 ##############################################
 
 FROM node:20.12 as frontend_artifacts
-ARG PASSWORDCOCKPIT_FRONTEND_TAG=9a3046ca7d072c6c592b68193d30cbabf91a6b30
+ARG PASSWORDCOCKPIT_FRONTEND_TAG=5e286e3dcca648ceaaf242cc8501ff24a8e20df6
 RUN apt-get install git -y
 WORKDIR /usr/src/app
 
