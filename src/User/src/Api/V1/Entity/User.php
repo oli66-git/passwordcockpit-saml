@@ -14,7 +14,11 @@ use OpenApi\Annotations as OA;
 /**
  * User
  *
- * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="username_UNIQUE", columns={"username"})})
+ * @ORM\Table(name="user", uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="username_UNIQUE", columns={"username"}),
+ *     @ORM\UniqueConstraint(name="email_UNIQUE", columns={"email"}),
+ *     @ORM\UniqueConstraint(name="oidc_link_UNIQUE", columns={"oidc_sub", "oidc_iss"})
+ * })
  * @ORM\Entity
  * @OA\Schema(description="User")
  */
@@ -91,6 +95,33 @@ class User
      * @OA\Property(property="change_password", type="boolean", description="Whether a user need to change his password (true) or not (false)")
      */
     private bool $changePassword;
+
+    /**
+     * Keycloak/OIDC Subject claim (sub)
+     * Unique identifier for the user in the OIDC provider
+     *
+     * @ORM\Column(name="oidc_sub", type="string", length=255, precision=0, scale=0, nullable=true, unique=false)
+     * @OA\Property(property="oidc_sub", type="string", description="OIDC Subject (Keycloak sub claim)", example="12345678-1234-1234-1234-123456789012")
+     */
+    private ?string $oidcSub = null;
+
+    /**
+     * Keycloak/OIDC Issuer URL
+     * The issuer identifier of the OIDC provider (e.g., https://keycloak.example.com/realms/master)
+     *
+     * @ORM\Column(name="oidc_iss", type="string", length=255, precision=0, scale=0, nullable=true, unique=false)
+     * @OA\Property(property="oidc_iss", type="string", description="OIDC Issuer (Keycloak issuer URL)", example="https://keycloak.example.com/realms/master")
+     */
+    private ?string $oidcIss = null;
+
+    /**
+     * Timestamp of the last login (OIDC or native authentication)
+     * Used for tracking user activity and session management
+     *
+     * @ORM\Column(name="last_login_at", type="datetime_immutable", precision=0, scale=0, nullable=true, unique=false)
+     * @OA\Property(property="last_login_at", type="string", format="date-time", description="Timestamp of last login", example="2026-01-26T10:30:00+00:00")
+     */
+    private ?\DateTimeImmutable $lastLoginAt = null;
 
     /**
      *
@@ -401,5 +432,67 @@ class User
     function setChangePassword($value)
     {
         $this->changePassword = $value;
+    }
+
+    /**
+     * Get OIDC Subject.
+     *
+     * @return string|null
+     */
+    public function getOidcSub(): ?string
+    {
+        return $this->oidcSub;
+    }
+
+    /**
+     * Get OIDC Issuer.
+     *
+     * @return string|null
+     */
+    public function getOidcIss(): ?string
+    {
+        return $this->oidcIss;
+    }
+
+    /**
+     * Set OIDC link (Subject + Issuer)
+     * Called by OidcProvisioningService during OIDC user provisioning
+     *
+     * @param string $sub OIDC Subject claim
+     * @param string $iss OIDC Issuer URL
+     *
+     * @return User
+     */
+    public function setOidcLink(string $sub, string $iss): self
+    {
+        $this->oidcSub = $sub;
+        $this->oidcIss = $iss;
+
+        return $this;
+    }
+
+    /**
+     * Get last login timestamp.
+     *
+     * @return \DateTimeImmutable|null
+     */
+    public function getLastLoginAt(): ?\DateTimeImmutable
+    {
+        return $this->lastLoginAt;
+    }
+
+    /**
+     * Set last login timestamp.
+     * Called after successful authentication (OIDC or native)
+     *
+     * @param \DateTimeImmutable $lastLoginAt
+     *
+     * @return User
+     */
+    public function setLastLoginAt(\DateTimeImmutable $lastLoginAt): self
+    {
+        $this->lastLoginAt = $lastLoginAt;
+
+        return $this;
     }
 }
