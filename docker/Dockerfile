@@ -48,6 +48,9 @@ COPY . /var/www/html
 # Build in /var/www/html
 WORKDIR /var/www/html
 
+# Fix git safe.directory warning
+RUN git config --global --add safe.directory /var/www/html
+
 # Install PHP dependencies via Composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --prefer-dist --optimize-autoloader
@@ -91,8 +94,8 @@ RUN {  \
     echo 'opcache.enable_cli=1'; \
     } >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 
-# Enable development mode
-RUN composer development-enable
+# Enable development mode (skip in Docker build, will be done in entrypoint)
+# RUN composer development-enable
 
 # Copy entrypoint script
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
