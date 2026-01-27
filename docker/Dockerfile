@@ -2,11 +2,16 @@ FROM --platform=linux/amd64 php:8.2-apache-bullseye
 
 # Install PHP extensions and system dependencies
 RUN set -ex; \
-    savedAptMark="$(apt-mark showmanual)"; \
     apt-get update; \
-    # Install system dependencies
+    # Install runtime dependencies (will NOT be removed)
     apt-get install -y --no-install-recommends \
         git \
+        unzip \
+        libzip4 \
+        libicu67 \
+        libldap-2.4-2; \
+    # Install build dependencies (will be removed after build)
+    apt-get install -y --no-install-recommends \
         libzip-dev \
         libicu-dev \
         libldap2-dev \
@@ -26,10 +31,11 @@ RUN set -ex; \
     # Install xdebug
     pecl install xdebug; \
     docker-php-ext-enable xdebug; \
-    # Cleanup
-    apt-mark auto '.*' > /dev/null; \
-    apt-mark manual $savedAptMark; \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+    # Cleanup build dependencies only (keep runtime libs)
+    apt-get purge -y --auto-remove \
+        libzip-dev \
+        libicu-dev \
+        libldap2-dev; \
     rm -rf /var/lib/apt/lists/*
 
 # Prepare /var/www/html
