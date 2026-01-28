@@ -4,15 +4,31 @@ use Passwordcockpit\Authentication\Oidc\OidcLoginAction;
 use Passwordcockpit\Authentication\Oidc\OidcCallbackAction;
 use Passwordcockpit\Authentication\Oidc\OidcLogoutAction;
 
-return static function (\Mezzio\Application $app, \Psr\Container\ContainerInterface $container): void {
-    $config = $container->get('config');
-    $enabled = $config['oidc']['enabled'] ?? false;
-    
-    if (!$enabled) {
-        return;
-    }
+$enabled = getenv('OIDC_ENABLED') === 'true';
 
-    $app->get('/auth/login', OidcLoginAction::class, 'auth.login');
-    $app->get('/auth/callback', OidcCallbackAction::class, 'auth.callback');
-    $app->get('/auth/logout', OidcLogoutAction::class, 'auth.logout');
-};
+if (!$enabled) {
+    return [];
+}
+
+return [
+    'routes' => [
+        [
+            'name' => 'auth.login',
+            'path' => '/auth/login',
+            'middleware' => [OidcLoginAction::class],
+            'allowed_methods' => ['GET']
+        ],
+        [
+            'name' => 'auth.callback',
+            'path' => '/auth/callback',
+            'middleware' => [OidcCallbackAction::class],
+            'allowed_methods' => ['GET']
+        ],
+        [
+            'name' => 'auth.logout',
+            'path' => '/auth/logout',
+            'middleware' => [OidcLogoutAction::class],
+            'allowed_methods' => ['GET']
+        ]
+    ]
+];
