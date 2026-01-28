@@ -30,7 +30,6 @@ RUN set -ex; \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; \
     # Install xdebug
     pecl install xdebug; \
-    docker-php-ext-enable xdebug; \
     # Cleanup build dependencies only (keep runtime libs)
     apt-get purge -y --auto-remove \
         libzip-dev \
@@ -74,6 +73,13 @@ RUN sed -ri -e 's!ServerSignature On!ServerSignature Off!g' /etc/apache2/conf-en
 
 # PHP configuration
 RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
+
+# Disable xdebug to prevent output before headers
+RUN { \
+    echo '[xdebug]'; \
+    echo 'zend_extension=xdebug.so'; \
+    echo 'xdebug.mode=off'; \
+    } > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 RUN sed -i \
     -e 's~^;date.timezone =$~date.timezone = Europe/Zurich~g' \
