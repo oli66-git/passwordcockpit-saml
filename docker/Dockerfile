@@ -83,13 +83,18 @@ RUN { \
 
 RUN sed -i \
     -e 's~^;date.timezone =$~date.timezone = Europe/Zurich~g' \
-    -e 's~^display_errors = Off$~display_errors = On~g' \
-    -e 's~^display_startup_errors = Off$~display_startup_errors = On~g' \
+    -e 's~^display_errors = .*$~display_errors = Off~g' \
+    -e 's~^display_startup_errors = .*$~display_startup_errors = Off~g' \
     -e 's~^memory_limit = .*$~memory_limit = 256M~g' \
     -e 's~^post_max_size = .*$~post_max_size = 128M~g' \
     -e 's~^max_execution_time = .*$~max_execution_time = 60~g' \
-    -e 's~^output_buffering = .*$~output_buffering = 4096~g' \
     /usr/local/etc/php/php.ini
+
+# Ensure output buffering and error logging are set explicitly
+RUN { \
+    echo 'output_buffering=4096'; \
+    echo 'log_errors=On'; \
+    } > /usr/local/etc/php/conf.d/zz-app-runtime.ini
 
 # OPcache configuration
 RUN {  \
