@@ -2,6 +2,10 @@
 
 declare(strict_types = 1);
 
+if (ob_get_level() === 0) {
+	ob_start();
+}
+
 // Delegate static file requests back to the PHP built-in webserver
 if (PHP_SAPI === 'cli-server' && $_SERVER['SCRIPT_FILENAME'] !== __FILE__) {
 	return false;
@@ -25,6 +29,10 @@ require 'vendor/autoload.php';
 	// configuration statements
 	//(require 'config/pipeline.php')($app, $factory, $container);
 	//(require 'config/routes.php')($app, $factory, $container);
+
+	if (ob_get_level() > 0 && ob_get_length() > 0) {
+		ob_clean();
+	}
 
 	$app->run();
 })();
