@@ -88,6 +88,7 @@ RUN sed -i \
     -e 's~^memory_limit = .*$~memory_limit = 256M~g' \
     -e 's~^post_max_size = .*$~post_max_size = 128M~g' \
     -e 's~^max_execution_time = .*$~max_execution_time = 60~g' \
+    -e 's~^output_buffering = .*$~output_buffering = 4096~g' \
     /usr/local/etc/php/php.ini
 
 # OPcache configuration
