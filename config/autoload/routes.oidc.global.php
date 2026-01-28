@@ -1,5 +1,4 @@
 ﻿<?php
-declare(strict_types=1);
 
 use Passwordcockpit\Authentication\Oidc\OidcLoginAction;
 use Passwordcockpit\Authentication\Oidc\OidcCallbackAction;
